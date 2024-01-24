@@ -1,0 +1,57 @@
+{
+  "version": "0.0.0",
+  "name": "zilker",
+  "description": "CLI and build system for zilk",
+  "author": {
+    "name": "m4rsh",
+    "email": "me@m4r.sh",
+    "url": "https://m4r.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m4r-sh/zilker.git"
+  },
+  "bin": {
+    "zilker": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "bun ./scripts/build.js"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./dist/zilker/bun.js",
+      "node": "./dist/zilker/node.js",
+      "import": "./dist/zilker/node.js",
+      "require": "./dist/zilker/node.js"
+    },
+    "./files": {
+      "bun": "./dist/files/index.js",
+      "node": "./dist/files/index.js",
+      "import": "./dist/files/index.js",
+      "require": "./dist/files/index.js"
+    },
+    "./engine": {
+      "bun": "./dist/engine/bun.js",
+      "node": "./dist/engine/node.js",
+      "import": "./dist/engine/node.js",
+      "require": "./dist/engine/node.js"
+    },
+    "./server": {
+      "bun": "./dist/server/bun.js",
+      "node": "./dist/server/node.js",
+      "import": "./dist/server/node.js",
+      "require": "./dist/server/node.js"
+    }
+  },
+  "dependencies": {
+    "ansi-escapes": "^6.2.0",
+    "dedent": "^1.5.1",
+    "hono": "^3.12.6",
+    "kleur": "^4.1.5",
+    "ora": "^8.0.1",
+    "prompts": "^2.4.2",
+    "sade": "^1.8.1",
+    "zilk": "^0.0.2"
+  }
+}
