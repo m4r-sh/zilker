@@ -807,6 +807,8 @@ function Assets({
       let out = {};
       if (asset.filetype == "js") {
         out[`.zilk/browser/${asset.asset_route}`] = asset.asset_contents;
+      } else if (asset.filetype == "css") {
+        out[`.zilk/css/${asset.asset_route}`] = asset.asset_contents;
       } else {
         out[`public/${asset.asset_route}`] = asset.asset_contents;
       }
@@ -1027,7 +1029,7 @@ function Views({
     build_all(views) {
       let out = {};
       if (global_css) {
-        out[global_css] = build_stylesheet({ views });
+        out[`.zilk/css/views.css`] = build_stylesheet({ views });
       }
       if (global_hydration) {
         out[`.zilk/browser/hydration.js`] = build_hydration({ views });

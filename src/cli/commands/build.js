@@ -1,5 +1,5 @@
 import { get_config } from '../src/get_config.js'
-import { Glob } from 'bun'
+import { Glob, $ } from 'bun'
 import fs from 'fs'
 import path from 'path'
 
@@ -8,6 +8,7 @@ const isGenerator = fn => ['GeneratorFunction', 'AsyncGeneratorFunction'].includ
 
 function writeOutputObject(out={}){
   Object.keys(out).forEach((output_path) => {
+    let should_skip = false
     let val = out[output_path]
     // if a function, resolve it
     if(typeof val == 'function'){
@@ -19,6 +20,10 @@ function writeOutputObject(out={}){
     }
     if(val.then && typeof val.then == 'function'){
       // await promise
+      should_skip = true
+      Promise.resolve(val).then((res) => {
+        Bun.write(output_path,res)
+      })
     }
     if(typeof val == 'object' && !Buffer.isBuffer(val)){
       if(val.toString){
@@ -26,7 +31,9 @@ function writeOutputObject(out={}){
       }
       // check for nested output object
     }
-    Bun.write(output_path,val)
+    if(!should_skip){
+      Bun.write(output_path,val)
+    }
   })
 }
 
@@ -43,6 +50,8 @@ export async function browser_bundle(){
   let browser_input_arr = Array.from(browser_input_glob.scanSync({
     cwd: path.join(process.cwd(), './.zilk/browser/')
   })).map(p => path.join(`./.zilk/browser/`,p))
+
+  await bundleCSS()
 
   let res = await Bun.build({
     entrypoints: browser_input_arr,
@@ -72,6 +81,19 @@ export async function browser_bundle(){
     ]
   })
   if(!res.success){ console.log(res) }
+}
+
+async function bundleCSS(){
+  let browser_input_glob = new Glob('**.css')
+  let browser_input_arr = Array.from(browser_input_glob.scanSync({
+    cwd: path.join(process.cwd(), './.zilk/css/')
+  }))
+
+  let outdir = 'public/'
+
+  for(let input of browser_input_arr){
+    await $`bunx lightningcss-cli --minify --targets '>= 0.25%' ${path.join(`./.zilk/css/`,input)} -o ${path.join(outdir,input)}`
+  }
 }
 
 export async function build(){

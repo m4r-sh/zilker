@@ -1,7 +1,9 @@
 import { Model, css } from 'zilk'
 import { Build } from './Build.js';
 import { Script } from './Script.js'
+import { $ } from 'bun'
 import path from 'path'
+import fs from 'fs'
 
 const handler_transpiler = new Bun.Transpiler({
   loader: "js",
@@ -78,7 +80,7 @@ export function Views({
     build_all(views){
       let out = {}
       if(global_css){
-        out[global_css] = build_stylesheet({ views })
+        out[`.zilk/css/views.css`] = build_stylesheet({ views })
       }
       if(global_hydration){
         out[`.zilk/browser/hydration.js`] = build_hydration({ views })

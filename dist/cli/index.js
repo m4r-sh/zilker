@@ -6016,11 +6016,12 @@ async function parseConfig(config) {
 }
 
 // src/cli/commands/build.js
-var {Glob: Glob2 } = globalThis.Bun;
+var {Glob: Glob2, $: $2 } = globalThis.Bun;
 import fs5 from "fs";
 import path3 from "path";
 var writeOutputObject = function(out = {}) {
   Object.keys(out).forEach((output_path) => {
+    let should_skip = false;
     let val = out[output_path];
     if (typeof val == "function") {
       if (isGenerator(val)) {
@@ -6028,13 +6029,19 @@ var writeOutputObject = function(out = {}) {
       }
     }
     if (val.then && typeof val.then == "function") {
+      should_skip = true;
+      Promise.resolve(val).then((res) => {
+        Bun.write(output_path, res);
+      });
     }
     if (typeof val == "object" && !Buffer.isBuffer(val)) {
       if (val.toString) {
         val = val.toString();
       }
     }
-    Bun.write(output_path, val);
+    if (!should_skip) {
+      Bun.write(output_path, val);
+    }
   });
 };
 async function executeBuild(build) {
@@ -6049,6 +6056,7 @@ async function browser_bundle() {
   let browser_input_arr = Array.from(browser_input_glob.scanSync({
     cwd: path3.join(process.cwd(), "./.zilk/browser/")
   })).map((p) => path3.join(`./.zilk/browser/`, p));
+  await bundleCSS();
   let res = await Bun.build({
     entrypoints: browser_input_arr,
     outdir: "public/~z",
@@ -6080,6 +6088,16 @@ async function browser_bundle() {
   });
   if (!res.success) {
     console.log(res);
+  }
+}
+async function bundleCSS() {
+  let browser_input_glob = new Glob2("**.css");
+  let browser_input_arr = Array.from(browser_input_glob.scanSync({
+    cwd: path3.join(process.cwd(), "./.zilk/css/")
+  }));
+  let outdir = "public/";
+  for (let input of browser_input_arr) {
+    await $2`bunx lightningcss-cli --minify --targets '>= 0.25%' ${path3.join(`./.zilk/css/`, input)} -o ${path3.join(outdir, input)}`;
   }
 }
 async function build() {

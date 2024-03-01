@@ -63,6 +63,8 @@ export function Assets({
       let out = {}
       if(asset.filetype == 'js'){
         out[`.zilk/browser/${asset.asset_route}`] = asset.asset_contents
+      } else if(asset.filetype == 'css'){
+        out[`.zilk/css/${asset.asset_route}`] = asset.asset_contents
       } else {
         out[`public/${asset.asset_route}`] = asset.asset_contents
       }
