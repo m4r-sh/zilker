@@ -7474,7 +7474,7 @@ var kleur_default = $;
 var import_prompts = __toESM(require_prompts3(), 1);
 
 // package.json
-var version = "0.0.1";
+var version = "0.0.2";
 
 // src/cli/src/get_config.js
 import fs3 from "fs";
@@ -8293,37 +8293,31 @@ var { transform, transformStyleAttribute, bundle, bundleAsync, browserslistToTar
 // src/cli/commands/build.js
 import fs5 from "fs";
 import path3 from "path";
-var writeOutputObject = function(out = {}) {
-  Object.keys(out).forEach((output_path) => {
-    let should_skip = false;
+async function writeOutputObject(out = {}) {
+  await Promise.all(Object.keys(out).map(async (output_path) => {
     let val = out[output_path];
     if (typeof val == "function") {
-      if (isGenerator(val)) {
-      } else {
-      }
+      throw "Build functions not supported yet";
     }
     if (val.then && typeof val.then == "function") {
-      should_skip = true;
-      Promise.resolve(val).then((res) => {
-        Bun.write(output_path, res);
-      });
+      val = await Promise.resolve(val);
     }
     if (typeof val == "object" && !Buffer.isBuffer(val)) {
       if (val.toString) {
         val = val.toString();
+      } else {
+        throw "Build objects not supported yet";
       }
     }
-    if (!should_skip) {
-      Bun.write(output_path, val);
-    }
-  });
-};
+    await Bun.write(output_path, val);
+  }));
+}
 async function executeBuild(build) {
   await Promise.all(build.all_files.map(async (buildfile) => {
     await buildfile.update();
-    writeOutputObject(build.build_each(buildfile));
+    await writeOutputObject(build.build_each(buildfile));
   }));
-  writeOutputObject(build.build_all(build.all_files));
+  await writeOutputObject(build.build_all(build.all_files));
 }
 async function browser_bundle() {
   let browser_input_glob = new Glob2("**.js");
@@ -8370,7 +8364,7 @@ async function bundleCSS() {
     cwd: path3.join(process.cwd(), "./.zilk/css/")
   }));
   let outdir = "public/";
-  for (let input of browser_input_arr) {
+  await Promise.all(browser_input_arr.map(async (input) => {
     let file_contents = await Bun.file(path3.join(`./.zilk/css/`, input)).arrayBuffer();
     let file_dest = path3.join(outdir, input);
     let { code } = transform({
@@ -8379,15 +8373,14 @@ async function bundleCSS() {
       code: file_contents,
       targets: browserslistToTargets(import_browserslist.default(">= 0.25%"))
     });
-    Bun.write(file_dest, code);
-  }
+    await Bun.write(file_dest, code);
+  }));
 }
 async function build() {
   let { builds } = await get_config();
   await Promise.all(builds.map((build2) => executeBuild(build2)));
   await browser_bundle();
 }
-var isGenerator = (fn) => ["GeneratorFunction", "AsyncGeneratorFunction"].includes(fn.constructor.name);
 
 // node_modules/hono/dist/utils/url.js
 var splitPath = (path4) => {

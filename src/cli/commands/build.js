@@ -8,43 +8,35 @@ import path from 'path'
 const isGenerator = fn => ['GeneratorFunction', 'AsyncGeneratorFunction'].includes(fn.constructor.name)
 
 
-function writeOutputObject(out={}){
-  Object.keys(out).forEach((output_path) => {
-    let should_skip = false
-    let val = out[output_path]
-    // if a function, resolve it
-    if(typeof val == 'function'){
-      if(isGenerator(val)){
-
-      } else {
-
+async function writeOutputObject(out={}){
+  await Promise.all(
+    Object.keys(out).map(async output_path => {
+      let val = out[output_path]
+      if(typeof val == 'function'){
+        throw 'Build functions not supported yet'
       }
-    }
-    if(val.then && typeof val.then == 'function'){
-      // await promise
-      should_skip = true
-      Promise.resolve(val).then((res) => {
-        Bun.write(output_path,res)
-      })
-    }
-    if(typeof val == 'object' && !Buffer.isBuffer(val)){
-      if(val.toString){
-        val = val.toString()
+      if(val.then && typeof val.then == 'function'){
+        val = await Promise.resolve(val)
       }
-      // check for nested output object
-    }
-    if(!should_skip){
-      Bun.write(output_path,val)
-    }
-  })
+      if(typeof val == 'object' && !Buffer.isBuffer(val)){
+        if(val.toString){
+          val = val.toString()
+        } else {
+          throw 'Build objects not supported yet'
+        }
+      }
+      await Bun.write(output_path,val)
+    })
+  )
 }
+
 
 export async function executeBuild(build){
   await Promise.all(build.all_files.map(async buildfile => {
     await buildfile.update()
-    writeOutputObject(build.build_each(buildfile))
+    await writeOutputObject(build.build_each(buildfile))
   }))
-  writeOutputObject(build.build_all(build.all_files))
+  await writeOutputObject(build.build_all(build.all_files))
 }
 
 export async function browser_bundle(){
@@ -93,7 +85,7 @@ async function bundleCSS(){
 
   let outdir = 'public/'
 
-  for(let input of browser_input_arr){
+  await Promise.all(browser_input_arr.map(async input => {
     let file_contents = await (Bun.file(path.join(`./.zilk/css/`,input))).arrayBuffer()
     let file_dest = path.join(outdir,input)
     let { code } = transform({
@@ -102,8 +94,8 @@ async function bundleCSS(){
       code: file_contents,
       targets: browserslistToTargets(browserslist('>= 0.25%'))
     })
-    Bun.write(file_dest, code)
-  }
+    await Bun.write(file_dest, code)
+  }))
 }
 
 export async function build(){
