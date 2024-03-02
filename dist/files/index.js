@@ -1,5 +1,5 @@
 // @bun
-// /Users/marshall/code/stabilimentum/packages/zilker/node_modules/zilk/build/ssr/bun.js
+// node_modules/zilk/build/ssr/bun.js
 class WeakMapSet extends WeakMap {
   set(key, value) {
     super.set(key, value);

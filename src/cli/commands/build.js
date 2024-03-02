@@ -1,5 +1,7 @@
 import { get_config } from '../src/get_config.js'
 import { Glob, $ } from 'bun'
+import browserslist from 'browserslist';
+import { transform, browserslistToTargets } from 'lightningcss'
 import fs from 'fs'
 import path from 'path'
 
@@ -92,7 +94,15 @@ async function bundleCSS(){
   let outdir = 'public/'
 
   for(let input of browser_input_arr){
-    await $`bunx lightningcss-cli --minify --targets '>= 0.25%' ${path.join(`./.zilk/css/`,input)} -o ${path.join(outdir,input)}`
+    let file_contents = await (Bun.file(path.join(`./.zilk/css/`,input))).arrayBuffer()
+    let file_dest = path.join(outdir,input)
+    let { code } = transform({
+      filename: file_dest,
+      minify: true,
+      code: file_contents,
+      targets: browserslistToTargets(browserslist('>= 0.25%'))
+    })
+    Bun.write(file_dest, code)
   }
 }
 
