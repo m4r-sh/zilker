@@ -3,7 +3,8 @@ import { serveStatic } from 'hono/bun'
 
 export function simple_server({
   root='./public',
-  port=3000
+  port=3000,
+  hostname="0.0.0.0"
 }={}){
   const app = new Hono()
 
@@ -21,9 +22,11 @@ export function simple_server({
     fetch(req){
       return app.fetch(req)
     },
-    error(){
+    error(e){
       console.log('Error from Bun.serve')
+      console.log(e)
     },
+    // hostname: hostname,
     port: port
   })
 }

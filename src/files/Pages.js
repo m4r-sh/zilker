@@ -55,7 +55,7 @@ export async function Pages({
     },
     get full_html(){
       let { ssr_html, meta } = this
-      return _document_module.template(meta,ssr_html).toString()
+      return _document_module.template(meta,ssr_html)
     },
     get output_html_route(){
       let { name } = this

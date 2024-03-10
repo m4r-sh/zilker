@@ -1,7 +1,10 @@
 import { get_config } from '../src/get_config.js'
 import { executeBuild, browser_bundle } from './build.js'
-import { simple_server } from '../../engine/server.js'
+import { simple_server } from '../src/server.js'
 import fs from 'fs'
+import { networkInterfaces as getNetworkInteraces } from 'node:os'
+
+const networkInterfaces = getNetworkInteraces()
 
 // watch root directory 
 // -> initialize all input files and their imports
@@ -15,7 +18,7 @@ import fs from 'fs'
 // -> if not in import list, check against globs for each build. must be adding *OR RENAMING* if not in import directory
 
 export async function dev(){
-  let { builds } = await get_config()
+  let { builds, localhost } = await get_config()
 
   await Promise.all(builds.map(build => executeBuild(build)))
   await browser_bundle()
@@ -32,7 +35,24 @@ export async function dev(){
     }
   })
 
-  simple_server({ root: 'public', port: 3000 })
-  console.log(`Serving at http://localhost:3000`)
+  let server = simple_server({ 
+    root: 'public',
+    ...localhost
+  })
 
+  let network_hint = server.hostname == 'localhost' ? ` (${getNetworkAddress()}:${server.port})` : ''
+  console.log(`server listening on ${server.hostname}:${server.port}${network_hint}`)
+  
+}
+
+function getNetworkAddress(){
+  for(const interfaceDetails of Object.values(networkInterfaces)){
+    if(!interfaceDetails) continue;
+
+    for(const details of interfaceDetails){
+      const { address, family, internal } = details
+
+      if(family == 'IPv4' && !internal) return address
+    }
+  }
 }
