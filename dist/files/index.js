@@ -1,5 +1,5 @@
 // @bun
-// /Users/marshall/code/stabilimentum/packages/zilker/node_modules/zilk/build/ssr/bun.js
+// node_modules/zilk/build/ssr/bun.js
 var cloned = function(node) {
   return setParentNode.call(this, node.cloneNode(true));
 };
