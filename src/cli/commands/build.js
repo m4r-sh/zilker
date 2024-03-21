@@ -40,7 +40,7 @@ export async function executeBuild(build){
 }
 
 export async function browser_bundle(){
-  let browser_input_glob = new Glob('**.js')
+  let browser_input_glob = new Glob('**/*.js')
   let browser_input_arr = Array.from(browser_input_glob.scanSync({
     cwd: path.join(process.cwd(), './.zilk/browser/')
   })).map(p => path.join(`./.zilk/browser/`,p))
@@ -78,7 +78,7 @@ export async function browser_bundle(){
 }
 
 async function bundleCSS(){
-  let browser_input_glob = new Glob('**.css')
+  let browser_input_glob = new Glob('**/*.css')
   let browser_input_arr = Array.from(browser_input_glob.scanSync({
     cwd: path.join(process.cwd(), './.zilk/css/')
   }))
