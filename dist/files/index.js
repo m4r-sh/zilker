@@ -5430,7 +5430,7 @@ function Assets({
       return is_generated ? is_generated : route.substring(route.lastIndexOf(".") + 1);
     },
     get asset_contents() {
-      return this.is_generated ? this._generated_contents : this.contents;
+      return this.is_generated && this.filetype != "worker" ? this._generated_contents : this.contents;
     },
     get asset_route() {
       let { is_generated, name: name2, route } = this;
@@ -5441,7 +5441,7 @@ function Assets({
       if (Buffer.compare(new_contents, this.contents) != 0) {
         this.contents = new_contents;
         Loader.registry.delete(this.route);
-        if (this.is_generated) {
+        if (this.is_generated && this.filetype != "worker") {
           this.module = await import(this.route);
           let res = await this.module.default();
           this.update_generated_contents(res);
@@ -5464,6 +5464,8 @@ function Assets({
         out[`.zilk/browser/${asset.asset_route}`] = asset.asset_contents;
       } else if (asset.filetype == "css") {
         out[`.zilk/css/${asset.asset_route}`] = asset.asset_contents;
+      } else if (asset.filetype == "worker") {
+        out[`.zilk/workers/${asset.asset_route}.js`] = asset.asset_contents;
       } else {
         out[`public/${asset.asset_route}`] = asset.asset_contents;
       }

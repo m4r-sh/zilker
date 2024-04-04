@@ -47,11 +47,14 @@ export async function browser_bundle(){
 
   await bundleCSS()
 
+  await bundleWorkers()
+
   let res = await Bun.build({
     entrypoints: browser_input_arr,
     outdir: 'public',
     minify: false,
     splitting: true,
+    root: './.zilk/browser',
     target: "browser",
     plugins: [
       {
@@ -75,6 +78,42 @@ export async function browser_bundle(){
     ]
   })
   if(!res.success){ console.log(res) }
+}
+
+async function bundleWorkers(){
+  let browser_input_glob = new Glob('**/*.js')
+  let browser_input_arr = Array.from(browser_input_glob.scanSync({
+    cwd: path.join(process.cwd(), './.zilk/workers/')
+  })).map(p => path.join(`./.zilk/workers/`,p))
+
+  let outdir = 'public/'
+
+  await Promise.all(
+    browser_input_arr.map(async input => {
+      let res = await Bun.build({
+        entrypoints: [input],
+        outdir: 'public',
+        target: 'browser',
+        splitting: false,
+        minify: false,
+        plugins: [
+          {
+            name: 'worker-import-remapping',
+            setup(build){
+              build.onResolve({ filter: /^\./ }, (args) => {
+                if(!args.importer.includes('/.zilk/workers/')){
+                  return
+                }
+                let out = path.join(args.importer,'../../',args.path)
+                return { path: out }
+              })
+            }
+          }
+        ]
+      })
+    })
+  )
+
 }
 
 async function bundleCSS(){
