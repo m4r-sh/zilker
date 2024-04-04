@@ -49,7 +49,7 @@ export async function browser_bundle(){
 
   let res = await Bun.build({
     entrypoints: browser_input_arr,
-    outdir: 'public/~z',
+    outdir: 'public',
     minify: false,
     splitting: true,
     target: "browser",

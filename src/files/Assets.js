@@ -25,7 +25,7 @@ export function Assets({
     },
     get filetype(){
       let { is_generated, route } = this
-      return is_generated ? is_generated : route.substring(route.lastIndexOf('.'))
+      return is_generated ? is_generated : route.substring(route.lastIndexOf('.')+1)
     },
     get asset_contents(){
       return this.is_generated ? this._generated_contents : this.contents

@@ -83,7 +83,7 @@ export function Views({
         out[`.zilk/css/views.css`] = build_stylesheet({ views })
       }
       if(global_hydration){
-        out[`.zilk/browser/hydration.js`] = build_hydration({ views })
+        out[`.zilk/browser/~z/hydration.js`] = build_hydration({ views })
       }
       return out;
     },
@@ -129,7 +129,7 @@ function build_hydration({ views }){
   views.forEach(({ name, handler_classes },i) => {
     if(handler_classes.length > 0){
       let vname = `$h${i}`
-      imports.push(`import {handlers as ${vname}} from '${path.join('../views/',name+'/handler.js')}'`)
+      imports.push(`import {handlers as ${vname}} from '${path.join('../../views/',name+'/handler.js')}'`)
       defines.push(`saturate(${vname})`)
     }
   });

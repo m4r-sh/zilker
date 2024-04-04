@@ -111,7 +111,7 @@ export async function Pages({
         out[sitemap] = build_sitemap({ pages, domain: 'macy.pink'})
       }
       if(sync_router){
-        out[`.zilk/browser/router.js`] = build_router({ pages })
+        out[`.zilk/browser/~z/router.js`] = build_router({ pages })
       }
       return out;
     },
@@ -164,7 +164,7 @@ function build_router({ pages }){
   pages.forEach(({ name, route_str },i) => {
     let _render = `$r${i}`
     let _meta = `$m${i}`
-    imports.push(`import {default as ${_render}, meta as ${_meta}} from '${path.join('../pages/',name+'/full.js')}'`)
+    imports.push(`import {default as ${_render}, meta as ${_meta}} from '${path.join('../../pages/',name+'/full.js')}'`)
     defines.push(`register('${route_str}',${_meta},(root) => render(root,htmlFor(root,'${route_str}')\`$\{${_render}()}\`))`)
   });
   return `${imports.join('\n')}\n${defines.join('\n')}`

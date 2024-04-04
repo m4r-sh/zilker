@@ -5427,7 +5427,7 @@ function Assets({
     },
     get filetype() {
       let { is_generated, route } = this;
-      return is_generated ? is_generated : route.substring(route.lastIndexOf("."));
+      return is_generated ? is_generated : route.substring(route.lastIndexOf(".") + 1);
     },
     get asset_contents() {
       return this.is_generated ? this._generated_contents : this.contents;
@@ -5564,7 +5564,7 @@ async function Pages({
         out[sitemap] = build_sitemap({ pages, domain: "macy.pink" });
       }
       if (sync_router) {
-        out[`.zilk/browser/router.js`] = build_router({ pages });
+        out[`.zilk/browser/~z/router.js`] = build_router({ pages });
       }
       return out;
     },
@@ -5612,7 +5612,7 @@ var build_router = function({ pages }) {
   pages.forEach(({ name: name2, route_str }, i) => {
     let _render = `\$r${i}`;
     let _meta = `\$m${i}`;
-    imports.push(`import {default as ${_render}, meta as ${_meta}} from '${path2.join("../pages/", name2 + "/full.js")}'`);
+    imports.push(`import {default as ${_render}, meta as ${_meta}} from '${path2.join("../../pages/", name2 + "/full.js")}'`);
     defines.push(`register('${route_str}',${_meta},(root) => render(root,htmlFor(root,'${route_str}')\`\${${_render}()}\`))`);
   });
   return `${imports.join("\n")}\n${defines.join("\n")}`;
@@ -5687,7 +5687,7 @@ function Views({
         out[`.zilk/css/views.css`] = build_stylesheet({ views });
       }
       if (global_hydration) {
-        out[`.zilk/browser/hydration.js`] = build_hydration({ views });
+        out[`.zilk/browser/~z/hydration.js`] = build_hydration({ views });
       }
       return out;
     },
@@ -5729,7 +5729,7 @@ var build_hydration = function({ views }) {
   views.forEach(({ name: name2, handler_classes }, i) => {
     if (handler_classes.length > 0) {
       let vname = `\$h${i}`;
-      imports.push(`import {handlers as ${vname}} from '${path3.join("../views/", name2 + "/handler.js")}'`);
+      imports.push(`import {handlers as ${vname}} from '${path3.join("../../views/", name2 + "/handler.js")}'`);
       defines.push(`saturate(${vname})`);
     }
   });

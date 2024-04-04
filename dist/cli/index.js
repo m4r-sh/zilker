@@ -7474,7 +7474,7 @@ var kleur_default = $;
 var import_prompts = __toESM(require_prompts3(), 1);
 
 // package.json
-var version = "0.1.2";
+var version = "0.1.3";
 
 // src/cli/src/get_config.js
 import fs3 from "fs";
@@ -12985,7 +12985,7 @@ async function browser_bundle() {
   await bundleCSS();
   let res = await Bun.build({
     entrypoints: browser_input_arr,
-    outdir: "public/~z",
+    outdir: "public",
     minify: false,
     splitting: true,
     target: "browser",
