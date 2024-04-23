@@ -82,9 +82,15 @@ export async function browser_bundle(){
 
 async function bundleWorkers(){
   let browser_input_glob = new Glob('**/*.js')
-  let browser_input_arr = Array.from(browser_input_glob.scanSync({
-    cwd: path.join(process.cwd(), './.zilk/workers/')
-  })).map(p => path.join(`./.zilk/workers/`,p))
+  let browser_input_arr
+  try {
+    browser_input_arr = Array.from(browser_input_glob.scanSync({
+      cwd: path.join(process.cwd(), './.zilk/workers/')
+    })).map(p => path.join(`./.zilk/workers/`,p))
+  } catch(e){
+    // "break" if no workers were found
+    return;
+  }
 
   let outdir = 'public/'
 
@@ -111,6 +117,7 @@ async function bundleWorkers(){
           }
         ]
       })
+      if(!res.success){ console.log(res) }
     })
   )
 

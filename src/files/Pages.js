@@ -53,6 +53,10 @@ export async function Pages({
     get ssr_html(){
       return this.module.default()
     },
+    param_render(params){
+      let { meta } = this
+      return _document_module.template(meta,this.module.default(params))
+    },
     get full_html(){
       let { ssr_html, meta } = this
       return _document_module.template(meta,ssr_html)
@@ -165,7 +169,7 @@ function build_router({ pages }){
     let _render = `$r${i}`
     let _meta = `$m${i}`
     imports.push(`import {default as ${_render}, meta as ${_meta}} from '${path.join('../../pages/',name+'/full.js')}'`)
-    defines.push(`register('${route_str}',${_meta},(root) => render(root,htmlFor(root,'${route_str}')\`$\{${_render}()}\`))`)
+    defines.push(`register('${route_str}',${_meta},(root,params) => render(root,htmlFor(root,'${route_str}')\`$\{${_render}(params)}\`))`)
   });
   return `${imports.join('\n')}\n${defines.join('\n')}`
 }

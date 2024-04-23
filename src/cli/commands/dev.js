@@ -37,7 +37,11 @@ export async function dev(){
 
   let server = simple_server({ 
     root: 'public',
-    ...localhost
+    ...localhost,
+    pages: builds.find(({ input_dir }) => {
+      console.log(input_dir)
+      return input_dir == 'pages'
+    })
   })
 
   let network_hint = server.hostname == 'localhost' ? ` (${getNetworkAddress()}:${server.port})` : ''

@@ -1,20 +1,22 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
+import { Pages } from '../../files/Pages'
 
 export function simple_server({
   root='./public',
   port=3000,
-  hostname="0.0.0.0"
+  hostname="0.0.0.0",
+  pages=Pages()
 }={}){
   const app = new Hono()
 
-  // pages.forEach(page => {
-  //   app.get(`${page.route_str}`, (c) => {
-  //     let params = c.req.param()
-  //     console.log(params)
-  //     return c.html(page.html_page)
-  //   })
-  // });
+  pages.all_files.forEach(page => {
+    app.get(`${page.route_str}`, (c) => {
+      let params = c.req.param()
+      console.log(params)
+      return c.html(page.param_render(params))
+    })
+  });
   
   app.get('*', serveStatic({ root }))
 
