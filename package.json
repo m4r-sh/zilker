@@ -1,0 +1,35 @@
+{
+  "version": "0.4.0",
+  "name": "zilker",
+  "description": "CLI and build system for zilk",
+  "author": {
+    "name": "m4rsh",
+    "email": "me@m4r.sh",
+    "url": "https://m4r.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m4r-sh/zilker.git"
+  },
+  "bin": {
+    "zilker": "src/cli/index.js"
+  },
+  "scripts": {
+    "build": "bun ./scripts/build.js"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./dist/engine/index.js",
+      "import": "./dist/engine/index.js"
+    },
+    "./inputs": {
+      "bun": "./dist/inputs/index.js",
+      "import": "./dist/inputs/index.js"
+    }
+  },
+  "dependencies": {
+    "ansi-escapes": "^7.0.0",
+    "sade": "^1.8.1"
+  }
+}
