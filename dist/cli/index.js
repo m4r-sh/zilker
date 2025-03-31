@@ -751,10 +751,16 @@ async function dev({
     let static_tree = {};
     for await (const file of new Bun.Glob("**/*").scan(cwd + "/" + static_dir)) {
       let abs_p = cwd + "/" + static_dir + "/" + file;
-      let static_path = "/" + file.replace(/(\/)?index.html$/, "");
+      let static_path = "/" + file;
       static_tree[static_path] = new Response(await Bun.file(abs_p).bytes(), {
         headers: { ...getHeaders(abs_p), ...server_opts.static_headers }
       });
+      if (/index\.html$/.test(file)) {
+        let extra_path = "/" + file.replace(/index\.html$/, "");
+        static_tree[extra_path] = new Response(await Bun.file(abs_p).bytes(), {
+          headers: { ...getHeaders(abs_p), ...server_opts.static_headers }
+        });
+      }
     }
     return {
       ...server_opts,
