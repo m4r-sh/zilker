@@ -40,8 +40,8 @@ export async function dev({
       });
 
       // If it ends with index.html, also add a route for the base path
-      if (/index\.html$/.test(file)) {
-        let extra_path = '/' + file.replace(/index\.html$/, '');
+      if (/(^|\/)index\.html$/.test(file)) {
+        let extra_path = '/' + file.replace(/(^|\/)index\.html$/, '');
         static_tree[extra_path] = new Response(await Bun.file(abs_p).bytes(), {
           headers: { ...getHeaders(abs_p), ...server_opts.static_headers },
         });

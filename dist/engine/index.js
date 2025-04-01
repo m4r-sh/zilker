@@ -502,8 +502,8 @@ async function dev({
       static_tree[static_path] = new Response(await Bun.file(abs_p).bytes(), {
         headers: { ...getHeaders(abs_p), ...server_opts.static_headers }
       });
-      if (/index\.html$/.test(file)) {
-        let extra_path = "/" + file.replace(/index\.html$/, "");
+      if (/(^|\/)index\.html$/.test(file)) {
+        let extra_path = "/" + file.replace(/(^|\/)index\.html$/, "");
         static_tree[extra_path] = new Response(await Bun.file(abs_p).bytes(), {
           headers: { ...getHeaders(abs_p), ...server_opts.static_headers }
         });

@@ -252,7 +252,7 @@ class o {
 var lib_default2 = (e, t2) => new o(e, t2);
 
 // package.json
-var version = "0.4.0";
+var version = "0.4.1";
 
 // src/engine/InputGroup.js
 import path from "node:path";
@@ -755,8 +755,8 @@ async function dev({
       static_tree[static_path] = new Response(await Bun.file(abs_p).bytes(), {
         headers: { ...getHeaders(abs_p), ...server_opts.static_headers }
       });
-      if (/index\.html$/.test(file)) {
-        let extra_path = "/" + file.replace(/index\.html$/, "");
+      if (/(^|\/)index\.html$/.test(file)) {
+        let extra_path = "/" + file.replace(/(^|\/)index\.html$/, "");
         static_tree[extra_path] = new Response(await Bun.file(abs_p).bytes(), {
           headers: { ...getHeaders(abs_p), ...server_opts.static_headers }
         });
