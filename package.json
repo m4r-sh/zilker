@@ -1,0 +1,40 @@
+{
+  "version": "0.5.0",
+  "name": "zilker",
+  "description": "CLI and build system for zilk",
+  "author": {
+    "name": "m4rsh",
+    "email": "me@m4r.sh",
+    "url": "https://m4r.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m4r-sh/zilker.git"
+  },
+  "bin": {
+    "zilker": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "bun run build:core && bun run build:cli && bun run build:inputs",
+    "build:core": "bun build --outfile dist/core.js --target=bun --minify ./src/core/index.js",
+    "build:inputs": "bun build --outfile dist/inputs.js --target=bun --minify ./src/inputs/index.js",
+    "build:cli": "bun build --outfile dist/cli.js --target=bun ./src/cli/index.js"
+  },
+  "type": "module",
+  "exports": {
+    "./core": {
+      "bun": "./dist/core.js"
+    },
+    "./inputs": {
+      "bun": "./dist/inputs.js"
+    }
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.8.4",
+    "sade": "^1.8.1",
+    "yocto-spinner": "^1.0.0",
+    "yoctocolors": "^2.1.2",
+    "zemmet": "^0.0.1",
+    "zilk": "^0.6.2"
+  }
+}

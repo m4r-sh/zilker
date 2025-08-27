@@ -1,0 +1,1 @@
+export { hashSourcesHTML } from './hashSourcesHTML'
